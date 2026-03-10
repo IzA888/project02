@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:['9092:9092']
+  redis:
+    image: 'redis:latest'
+    ports:['6379:6379']
+  flask-agent:
+    build: ./flask-app
+    depends_on: [kafka, redis]
+  spring-app:
+    build: ./spring-app
+    depends_on: [kafka]
