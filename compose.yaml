@@ -8,18 +8,65 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  app:
     build:
       context: .
-
+    networks:
+      - rede-agentes-fraude
+    environment:
+      - SERVER_ADDRESS=0.0.0.0
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2-db:1521//opt/h2-data/fraude_db;DB_CLOSE_DELAY=-1;IFEXISTS=FALSE
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Forces Hibernate to create tables
     depends_on:
       - kafka
+      - h2-db
     ports:
       - 8080:8080
+    volumes:
+      - ./h2_data:/opt/h2-data/fraud_db
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
-  kafka:
-    image: 'bitnami/kafka:latest'
+    image: confluentinc/cp-zookeeper:7.5.0
+    networks:
+      - rede-agentes-fraude
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2182
+      - ZOOKEEPER_TICK_TIME=2000
     ports:
-      - 9092:9092
+        - "2182:2182"
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    networks:
+      - rede-agentes-fraude
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2182
+      #2 listeners, 1 para o pc(9094) e outro para os containers(29092)
+      - KAFKA_LISTENERS=INTERNO://0.0.0.0:29092,EXTERNO://0.0.0.0:9094
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNO:PLAINTEXT,EXTERNO:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=INTERNO://kafka:29092,EXTERNO://localhost:9094
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNO
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    ports:
+      - "9094:9094"
+  h2-db:
+    image: oscarfonts/h2:latest
+    container_name: h2_database
+    networks:
+      - rede-agentes-fraude
+    ports:
+      - "1521:1521" #porta do banco(tcp)
+      - "8082:8082" #porta do console web(interface)
+    volumes:
+      - h2_data:/opt/h2-data
 
+volumes:
+  h2_data:
+
+networks:
+  rede-agentes-fraude:
+    external: true

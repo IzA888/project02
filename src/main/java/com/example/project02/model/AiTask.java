@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "ai_tasks")
 public class AiTask {
 
     @Id
@@ -16,6 +18,7 @@ public class AiTask {
     @Column(name = "prompt")
     private String prompt;
 
+    @Column(name = "resposta")
     private String resposta;
     
     public AiTask(String prompt) {

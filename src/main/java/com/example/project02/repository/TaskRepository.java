@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.example.project02.model.AiTask;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Long, AiTask> {
+public interface TaskRepository extends JpaRepository<AiTask, Long> {
 
     AiTask save(AiTask task);
     
