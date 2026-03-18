@@ -16,6 +16,7 @@ services:
     environment:
       - SERVER_ADDRESS=0.0.0.0
       - SERVER_PORT=8080
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2-db:1521//opt/h2-data/fraude_db;DB_CLOSE_DELAY=-1;IFEXISTS=FALSE
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=password
@@ -58,6 +59,8 @@ services:
     container_name: h2_database
     networks:
       - rede-agentes-fraude
+    environment:
+      - H2_OPTIONS=-ifNotExists
     ports:
       - "1521:1521" #porta do banco(tcp)
       - "8082:8082" #porta do console web(interface)

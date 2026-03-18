@@ -25,6 +25,9 @@ public class AiTask {
         this.prompt = prompt;
     }
 
+    public AiTask() {
+    }
+
     public String getResposta() {
         return resposta;
     }

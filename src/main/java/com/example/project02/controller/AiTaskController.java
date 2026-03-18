@@ -25,10 +25,11 @@ public class AiTaskController {
     }
 
     @PostMapping("/ask")
-    public void askAgent(@RequestParam AiTask task, RedirectAttributes ra) {
+    public String askAgent(@RequestParam String task, RedirectAttributes ra) {
         service.sendTaskToAi(task);
         
         ra.addFlashAttribute("Processando...");
+        return "agent-page";
     }
 
     @GetMapping("/result")

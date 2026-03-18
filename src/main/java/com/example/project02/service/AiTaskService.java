@@ -21,13 +21,13 @@ public class AiTaskService {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    private AiTask aiTask;
+    private AiTask aiTask = new AiTask();
 
-    public void sendTaskToAi(AiTask task) {
+    public void sendTaskToAi(String task) {
         //envia para o tópico que o flask está ouvindo
         try{
             kafkaTemplate.send("task", new ObjectMapper().writeValueAsString(task));
-            aiTask.setPrompt(task.getPrompt());
+            aiTask.setPrompt(task);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -36,10 +36,12 @@ public class AiTaskService {
 
     @KafkaListener(topics = "response", groupId = "spring-group")
     public void ListenAiResults(String mensage){
+        System.out.println("Recebido: " + mensage);
         try {
             aiTask = new ObjectMapper().readValue(mensage, AiTask.class);
             resultado.put(aiTask.getId(), aiTask.getResposta());
             saveTask(aiTask);
+            System.out.println(aiTask);
         } catch (Exception e) {
             e.printStackTrace();
         }
