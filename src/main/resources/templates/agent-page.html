@@ -9,10 +9,13 @@
         <h2> Painel de comandos</h2>
         <hr>
         
-        <div th:if="${menssagem}" class="alert alert-success" th:text="${mensage}"></div>
+        <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
 
-        <div id="response-area" th:attr="hx-get=@{/agent/result}" hx-trigger="every 2s" hx-target="#response-area">
-            <p th:text="@{response}">Aguardando resposta...</p>
+        <div id="response-area" hx-get="@{/agent/result}" hx-trigger="every 2s" hx-target="#response-area">
+                <div th:if="${response}" class="card p-3 mb-3">
+                    <h5>Resposta do agente:</h5>
+                    <p th:text="${response}"></p>
+                </div>
         </div>
 
         <form th:action="@{/agent/ask}" method="post" class="card p-4 shadow-sm">
