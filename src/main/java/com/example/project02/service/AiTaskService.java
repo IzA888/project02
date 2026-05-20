@@ -35,7 +35,7 @@ public class AiTaskService {
     
 
     @KafkaListener(topics = "response", groupId = "spring-group")
-    public void ListenAiResults(String mensage){
+    public void listenAiResults(String mensage){
         System.out.println("Recebido: " + mensage);
         try {
             aiTask = new ObjectMapper().readValue(mensage, AiTask.class);
