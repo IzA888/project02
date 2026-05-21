@@ -11,11 +11,16 @@
         
         <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
 
-        <div id="response-area" hx-get="@{/agent/result}" hx-trigger="every 2s" hx-target="#response-area">
-                <div th:if="${response}" class="card p-3 mb-3">
-                    <h5>Resposta do agente:</h5>
-                    <p th:text="${response}"></p>
-                </div>
+        <div id="response-area" 
+            th:hx-get="@{/agent/result}" 
+            hx-trigger="every 2s" 
+            hx-target="#response-area">
+            
+            <div th:if="${response}" class="card p-3 mb-3">
+                <h5>Resposta do agente:</h5>
+                <p th:text="${response}"></p>
+            </div>
+            
         </div>
 
         <form th:action="@{/agent/ask}" method="post" class="card p-4 shadow-sm">

@@ -7,7 +7,5 @@ import com.example.project02.model.AiTask;
 
 @Repository
 public interface TaskRepository extends JpaRepository<AiTask, Long> {
-
-    AiTask save(AiTask task);
     
 }

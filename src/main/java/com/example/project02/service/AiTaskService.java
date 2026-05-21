@@ -1,8 +1,5 @@
 package com.example.project02.service;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -10,13 +7,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.project02.model.AiTask;
 import com.example.project02.repository.TaskRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AiTaskService {
 
     private TaskRepository taskRepository;
-    private final Map<Long, String> resultado = new ConcurrentHashMap<>();
     
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -35,24 +32,39 @@ public class AiTaskService {
     
 
     @KafkaListener(topics = "response", groupId = "spring-group")
-    public void listenAiResults(String mensage){
-        System.out.println("Recebido: " + mensage);
+    public void listenAiResults(String mensagem) {
+        System.out.println("Recebido: " + mensagem);
         try {
-            aiTask = new ObjectMapper().readValue(mensage, AiTask.class);
-            resultado.put(aiTask.getId(), aiTask.getResposta());
-            saveTask(aiTask);
-            System.out.println(aiTask);
+            JsonNode respostaIa = new ObjectMapper().readTree(mensagem);
+    
+            if (respostaIa.isArray() && respostaIa.has(0) && respostaIa.get(0).has(0)) {
+                    String resposta = respostaIa.get(0).get(0).asText();
+                    aiTask.setResposta(resposta);
+                    saveTask(aiTask);
+                    System.out.println(aiTask);
+            } else {
+                throw new IllegalArgumentException("Resposta recebida em formato inesperado: " + mensagem);
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            
         }
     }
 
-    public String getLatestResult(){
-        return resultado.getOrDefault(aiTask.getId(), "Aguardando resposta...");
+    public String getRespostaIa() {
+        if (aiTask.getResposta() == null) {
+            return "Aguardando resposta da IA...";
+        } else {
+            return aiTask.getResposta();
+        }
     }
     
-    public String saveTask(AiTask task) {
+    public AiTask saveTask(AiTask task) {
         //salvar resposta no banco
-        return "Task salva com sucesso" + taskRepository.save(task);
+        if (task != null) {
+            return taskRepository.save(task);
+        } else {
+            throw new IllegalArgumentException("Task não pode ser nula");
+        }
     }
 }
