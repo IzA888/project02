@@ -4,31 +4,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
         <title>Painel teste</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/sse.js"></script>
     </head>
     <body class="container-mt-5">
         <h2> Painel de comandos</h2>
         <hr>
-        
-        <div th:if="${mensagem}" class="alert alert-success" th:text="${mensagem}"></div>
-
-        <div id="response-area" 
-            th:hx-get="@{/agent/result}" 
-            hx-trigger="every 2s" 
-            hx-target="#response-area">
-            
-            <div th:if="${response}" class="card p-3 mb-3">
-                <h5>Resposta do agente:</h5>
-                <p th:text="${response}"></p>
+        <!-- hx-ext="sse" ativa o módulo na div. sse-connect abre o canal com o servidor -->
+        <div hx-ext="sse" sse-connect="/agent/stream" class="p-3">
+            <!-- Se o Controller já carregar a página com uma resposta, ela aparece aqui -->
+            <div th:if="${response}" class="card p-3 mb-3 border-success shadow-sm" ss-swap="agent-response">
+                <h5 class="text-success">🚀 Resposta do agente:</h5>
+                <p class="mb-0 text-dark" th:text="${response}" style="white-space: pre-wrap;"></p>
             </div>
-            
         </div>
 
-        <form th:action="@{/agent/ask}" method="post" class="card p-4 shadow-sm">
+        <form th:action="@{/agent/ask}" method="post" class="card p-4 shadow-sm" hx-indicator="#carregando">
             <div class="mb-3">
                 <label for="task" class="form-label">Digite um comando aqui.</label>
                 <textarea name="task" class="form-control" placeholder="Ex.: O que é um agente de IA?"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Enviar</button>
+            <!-- Este spinner fica oculto e o HTMX mostra ele automaticamente enquanto espera o servidor -->
+            <div id="carregando" class="htmx-indicator mt-2 text-muted small">
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                O agente está processando a resposta via Kafka...
+            </div>
         </form>
     </body>
 </html>

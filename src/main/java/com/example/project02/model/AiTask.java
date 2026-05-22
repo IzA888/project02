@@ -18,7 +18,7 @@ public class AiTask {
     @Column(name = "prompt")
     private String prompt;
 
-    @Column(name = "resposta")
+    @Column(name = "resposta", columnDefinition = "TEXT")
     private String resposta;
     
     public AiTask(String prompt) {

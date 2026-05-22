@@ -17,10 +17,12 @@ services:
       - SERVER_ADDRESS=0.0.0.0
       - SERVER_PORT=8080
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
-      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2-db:1521//opt/h2-data/fraude_db;DB_CLOSE_DELAY=-1;IFEXISTS=FALSE
+      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2-db:1521//opt/h2-data/fraude_db;DB_CLOSE_DELAY=-1;IFEXISTS=FALSE;
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Forces Hibernate to create tables
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop # Forces Hibernate to create tables
+      - SPRING_JPA_SHOW_SQL=true # Enable SQL logging for debugging
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect # Use PostgreSQL dialect for H2
     depends_on:
       - kafka
       - h2-db

@@ -5,18 +5,22 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.project02.controller.SseController;
 import com.example.project02.model.AiTask;
 import com.example.project02.repository.TaskRepository;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AiTaskService {
 
+    @Autowired
     private TaskRepository taskRepository;
     
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private SseController sseController;
 
     private AiTask aiTask = new AiTask();
 
@@ -31,23 +35,22 @@ public class AiTaskService {
     }
     
 
-    @KafkaListener(topics = "response", groupId = "spring-group")
+    @KafkaListener(topics = "task-results", groupId = "spring-group")
     public void listenAiResults(String mensagem) {
-        System.out.println("Recebido: " + mensagem);
+        System.out.println("Recebido");
         try {
-            JsonNode respostaIa = new ObjectMapper().readTree(mensagem);
-    
-            if (respostaIa.isArray() && respostaIa.has(0) && respostaIa.get(0).has(0)) {
-                    String resposta = respostaIa.get(0).get(0).asText();
-                    aiTask.setResposta(resposta);
-                    saveTask(aiTask);
-                    System.out.println(aiTask);
+            if (mensagem.trim().startsWith("{")){
+               String resposta = new ObjectMapper().readTree(mensagem).get("resposta").asText();
+               aiTask.setResposta(resposta);
+               System.out.println("Resposta extraída");
             } else {
-                throw new IllegalArgumentException("Resposta recebida em formato inesperado: " + mensagem);
+                aiTask.setResposta(mensagem);
             }
+            sseController.dispararTela(aiTask.getResposta());
+            saveTask(aiTask);
+            System.out.println("salvo");
         } catch (Exception e) {
-            e.printStackTrace();
-            
+            throw new RuntimeException("Erro ao processar mensagem do Kafka: " + e.getMessage(), e);            
         }
     }
 
