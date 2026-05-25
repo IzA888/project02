@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-Sistema web que integra uma **IA (Flask)** com **Spring Boot** para processar tarefas assincronamente. O usuário envia perguntas através de uma página web e recebe respostas em tempo real usando Server-Sent Events (SSE).
+Sistema web que integra uma **[IA (Flask)](https://github.com/IzA888/project01)** com **Spring Boot** para processar tarefas assincronamente. O usuário envia perguntas através de uma página web e recebe respostas em tempo real usando Server-Sent Events (SSE).
 
 ---
 
@@ -89,7 +89,7 @@ Navegador (Atualização em tempo real)
 | **Spring Boot** | Framework backend Java |
 | **Kafka** | Mensageria assíncrona |
 | **SSE** | Comunicação em tempo real |
-| **Flask** | Servidor IA (Python) |
+| **Flask** | [Servidor IA (Python)](https://github.com/IzA888/project01) |
 | **Banco de Dados** | Persistência de tarefas |
 | **HTML/CSS** | Interface web |
 
