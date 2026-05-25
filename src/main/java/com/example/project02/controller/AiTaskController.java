@@ -1,7 +1,5 @@
 package com.example.project02.controller;
 
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,7 +27,7 @@ public class AiTaskController {
     public String askAgent(@RequestParam String task) {
         service.sendTaskToAi(task);
     
-        return "agent-page";
+        return "redirect:/agent";
     }
 
     @PostMapping("/resposta")

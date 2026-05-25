@@ -13,9 +13,11 @@
         <!-- hx-ext="sse" ativa o módulo na div. sse-connect abre o canal com o servidor -->
         <div hx-ext="sse" sse-connect="/agent/stream" class="p-3">
             <!-- Se o Controller já carregar a página com uma resposta, ela aparece aqui -->
-            <div th:if="${response}" class="card p-3 mb-3 border-success shadow-sm" ss-swap="agent-response">
-                <h5 class="text-success">🚀 Resposta do agente:</h5>
-                <p class="mb-0 text-dark" th:text="${response}" style="white-space: pre-wrap;"></p>
+            <div id="response-area" class="card p-3 mb-3 border-success shadow-sm" sse-swap="agent-response">
+                <div class="text-muted small p-3 border rounded bg-light">
+                    <span class="spinner-border spinner-border-sm me-2 text-primary" role="status"></span>
+                    Pronto para receber tarefas. Aguardando processamento do agente inteligente...
+                </div>
             </div>
         </div>
 

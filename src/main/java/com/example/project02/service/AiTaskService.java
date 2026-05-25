@@ -46,7 +46,19 @@ public class AiTaskService {
             } else {
                 aiTask.setResposta(mensagem);
             }
-            sseController.dispararTela(aiTask.getResposta());
+
+            // 1. Montamos o HTML do card completo com a formatação adequada
+            String htmlCard = """
+                <div class="card p-3 mb-3 border-success shadow-sm">
+                    <h5 class="text-success">🚀 Resposta do agente:</h5>
+                    <p class="mb-0 text-dark" style="white-space: pre-wrap;">%s</p>
+                </div>
+            """.formatted(aiTask.getResposta());
+
+            // 2. CRITICAL: Remove quebras de linha físicas do bloco de texto para o HTMX ler tudo sem quebrar
+            String htmlLimpo = htmlCard.replace("\n", "").replace("\r", "");
+
+            sseController.dispararTela(htmlLimpo);
             saveTask(aiTask);
             System.out.println("salvo");
         } catch (Exception e) {
